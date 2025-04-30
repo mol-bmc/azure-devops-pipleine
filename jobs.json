@@ -1,0 +1,61 @@
+{
+    "mol-glue-demo-folder": {
+      "Type": "Folder",
+      "ControlmServer": "smpod",
+      "OrderMethod": "Manual",
+      "ActiveRetentionPolicy": "CleanEndedOK",
+      "CreatedBy": "moladugb",
+      "Application": "mol-app",
+      
+      "glue-job": {
+        "Type": "Job:AWS Glue",
+        "ConnectionProfile": "MOL-GLUE-CONNECTION-PROFILE",
+        "Glue Job Name": "mol-glue-job-run",
+        "Glue Job Arguments": "unchecked",
+        "CreatedBy": "moladugb",
+        "Host": "glueagents",
+        "Application": "mol-app"
+      },
+  
+      "command-job-1": {
+        "Type": "Job:Command",
+        "Command": "echo Hello World!",
+        "RunAs": "ctmagnet",
+        "Host": "glueagents",
+        "Application": "mol-app"
+      },
+  
+      "command-job-2": {
+        "Type": "Job:Command",
+        "Command": "echo Hello World!",
+        "RunAs": "ctmagnet",
+        "Host": "glueagents",
+        "Application": "mol-app"
+      },
+  
+      "command-job-3": {
+        "Type": "Job:Command",
+        "Command": "echo I am out",
+        "RunAs": "ctmagnet",
+        "Host": "glueagents",
+        "Application": "mol-app"
+      },
+  
+      "command-job-4": {
+        "Type": "Job:Command",
+        "Command": "echo Bye now",
+        "RunAs": "ctmagnet",
+        "Host": "glueagents",
+        "Application": "mol-app"
+      },
+  
+      "Check-Inventory-Lambda-Job": {
+        "Type": "Job:AWS:Lambda",
+        "Application": "mol-app",
+        "ConnectionProfile": "MOL-AWS",
+        "FunctionName": "online-store-checkout-workflow-dev-checkInventory",
+        "AppendLog": true
+      }
+    }
+  }
+  

@@ -1,0 +1,71 @@
+# Pipeline for Control-M jobs-as-code with parameters
+
+parameters:
+  - name: branchName
+    type: string
+    default: 'master'
+
+  - name: nodeVersion
+    type: string
+    default: '16.x'
+
+  - name: ctmEnvName
+    type: string
+    default: 'mol-ctm'
+
+  - name: ctmApiUrl
+    type: string
+    default: 'https://smprod.ctmdemo.com:8443/automation-api'
+
+  - name: ctmCliUrl
+    type: string
+    default: 'https://smprod.ctmdemo.com:8443/automation-api/ctm-cli.tgz'
+
+trigger:
+  - ${{ parameters.branchName }}
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: My-variable-group
+  - name: ctmUsername
+    value: $(ctm-username)  # Define this secret in your pipeline library
+  - name: ctmPassword
+    value: $(ctm-password)  # Define this secret in your pipeline library
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: ${{ parameters.nodeVersion }}
+    displayName: 'Install Node.js'
+
+  - script: |
+      npm install
+      npm run build
+      npm -v
+      node -v
+    displayName: 'npm install and build'
+
+  - script: |
+      wget ${{ parameters.ctmCliUrl }}
+      npm -g install ctm-cli.tgz
+      ctm -v
+      ctm env add ${{ parameters.ctmEnvName }} ${{ parameters.ctmApiUrl }} $(ctmUsername) $(ctmPassword)
+    displayName: 'Download and install CTM AAPI CLI'
+
+  - script: |
+      ctm build ctm-lambdajob.json
+    displayName: 'Build jobs-as-code json file'
+
+  - script: |
+      ctm deploy ctm-lambdajob.json
+    displayName: 'Deploy jobs'
+
+  - script: |
+      ctm run ctm-lambdajob.json
+    displayName: 'Run jobs'
+
+  - script: |
+      echo "Implement your test automation here using ctm run status and ctm run job:output::get"
+    displayName: 'Test jobs'
